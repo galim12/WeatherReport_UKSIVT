@@ -15,14 +15,42 @@ using System.Windows.Shapes;
 
 namespace WeatherReport_UKSIVT
 {
-    /// <summary>
-    /// Логика взаимодействия для MainWindow.xaml
-    /// </summary>
     public partial class MainWindow : Window
     {
+        private readonly WeatherUIUpdater _weatherUIUpdater;
         public MainWindow()
         {
             InitializeComponent();
+            _weatherUIUpdater = new WeatherUIUpdater(LeftStack);
+            UpdateWeather();
+        }
+
+        private void CloseImage_MouseEnter(object sender, MouseEventArgs e)
+        {
+            Image image = sender as Image;
+            if (image != null)
+            {
+                image.Source = new BitmapImage(new Uri("/Images/close_dark.png", UriKind.Relative));
+            }
+        }
+
+        private void CloseImage_MouseLeave(object sender, MouseEventArgs e)
+        {
+            Image image = sender as Image;
+            if (image != null)
+            {
+                image.Source = new BitmapImage(new Uri("/Images/close_white.png", UriKind.Relative));
+            }
+        }
+
+        private void CloseImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            Application.Current.Shutdown();
+        }
+
+        private async void UpdateWeather()
+        {
+            await _weatherUIUpdater.UpdateWeatherUI();
         }
 
         private void textSearch_MouseDown(object sender, MouseButtonEventArgs e)
@@ -39,5 +67,14 @@ namespace WeatherReport_UKSIVT
         {
 
         }
+
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            var ShowFavorites = new FavouritesSpisok(); 
+            ShowFavorites.Show();
+            
+        }
+
+        
     }
 }

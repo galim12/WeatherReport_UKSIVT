@@ -35,6 +35,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Newtonsoft.Json, Version=13.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <HintPath>..\packages\Newtonsoft.Json.13.0.3\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -55,9 +58,21 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="FavouritesSpisok.xaml.cs">
+      <DependentUpon>FavouritesSpisok.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="UserControls\FavouritesCity.xaml.cs">
+      <DependentUpon>FavouritesCity.xaml</DependentUpon>
+    </Compile>
     <Compile Include="UserControls\WeatherCardDay.xaml.cs">
       <DependentUpon>WeatherCardDay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="WeatherApiClient.cs" />
+    <Compile Include="WeatherUIUpdater.cs" />
+    <Page Include="FavouritesSpisok.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -70,6 +85,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="UserControls\FavouritesCity.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
     <Page Include="UserControls\WeatherCardDay.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
@@ -93,6 +112,7 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+    <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
@@ -121,6 +141,16 @@
     <Resource Include="Images\sunset.png" />
     <Resource Include="Images\sun_cloud.png" />
     <Resource Include="Images\water.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\close_dark.png" />
+    <Resource Include="Images\close_white.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\vertical_line.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\delete_city.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
 </Project>

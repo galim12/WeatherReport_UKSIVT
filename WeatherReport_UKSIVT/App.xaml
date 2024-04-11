@@ -4,7 +4,36 @@
              xmlns:local="clr-namespace:WeatherReport_UKSIVT"
              StartupUri="MainWindow.xaml">
     <Application.Resources>
+        <!-- LISTVIEW   -->
+        <Style TargetType="ListViewItem">
+            <Setter Property="ScrollViewer.HorizontalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="ScrollViewer.VerticalScrollBarVisibility" Value="Disabled"/>
+            <Setter Property="BorderThickness" Value="0"/>
+            <Setter Property="Template">
+                <Setter.Value>
+                    <ControlTemplate TargetType="ListViewItem">
+                        <Border Background="{TemplateBinding Background}"
+                            BorderBrush="{TemplateBinding BorderBrush}"
+                            BorderThickness="{TemplateBinding BorderThickness}">
+                            <ContentPresenter/>
+                        </Border>
+                        <ControlTemplate.Triggers>
+                            <Trigger Property="IsMouseOver" Value="True">
+                                <Setter Property="Background" Value="Transparent"/>
+                            </Trigger>
+                        </ControlTemplate.Triggers>
+                    </ControlTemplate>
+                </Setter.Value>
+            </Setter>
+        </Style>
         
+
+
+
+        <Style x:Key="myHeaderStyle" TargetType="{x:Type GridViewColumnHeader}">
+            <Setter Property="Visibility" Value="Collapsed" />
+        </Style>
+
         <Style x:Key="textHint" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#ACB0AF" />
             <Setter Property="FontSize" Value="14" />
@@ -13,7 +42,7 @@
             <Setter Property="Margin" Value="10 0 0 0" />
             <Setter Property="VerticalAlignment" Value="Center" />
         </Style>
-            
+
         <Style x:Key="widgetBorder" TargetType="Border">
             <Setter Property="Background" Value="#ffffff" />
             <Setter Property="CornerRadius" Value="10" />
@@ -30,6 +59,18 @@
                 </Trigger>
             </Style.Triggers>
         </Style>
+        <!--<Style x:Key="CloseImage" TargetType="Image">
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Source" Value="/Images/close_dark.png"/>
+                </Trigger>
+                <Trigger Property="IsMouseOver" Value="False">
+                    <Setter Property="Source" Value="/Images/close_white.png"/>
+                </Trigger>
+            </Style.Triggers>
+           
+        </Style>-->
+        
 
 
         <Style x:Key="textBox" TargetType="TextBox">
@@ -111,11 +152,19 @@
                 <Trigger Property="IsMouseOver" Value="True">
                     <Setter Property="Background" Value="#1A1A1A" />
                     <Setter Property="Foreground" Value="#FFFFFF" />
+                    <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
                 </Trigger>
             </Style.Triggers>
         </Style>
 
-
+        <Style TargetType="Button">
+            <Setter Property="FocusVisualStyle" Value="{x:Null}"/>
+            <Style.Triggers>
+                <Trigger Property="IsMouseOver" Value="True">
+                    <Setter Property="Background" Value="Transparent"/>
+                </Trigger>
+            </Style.Triggers>
+        </Style>
         <Style x:Key="titleText" TargetType="TextBlock">
             <Setter Property="Foreground" Value="#9a9a9a" />
             <Setter Property="FontSize" Value="16" />

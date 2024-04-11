@@ -27,17 +27,19 @@
                         <Image Source="/Images/explore.png" Height="18" Margin="5 0 0 0"/>
                         <TextBlock x:Name="textSearch" MouseDown="textSearch_MouseDown" Text="Поиск..." Style="{StaticResource textHint}"/>
                         <TextBox Name="txtSearch" TextChanged="txtSearch_TextChanged" Style="{StaticResource textBox}"/>
+
                     </Grid>
                 </Border>
+                <Button Content="Добавить в избранное" Style="{StaticResource button}" Width="156" Margin="0,10,0,0" Height="46" Click="Button_Click"/>
 
-                <StackPanel Margin="50 60 0 0">
-                    <Image Source="/Images/sun_cloud.png" Width="140" HorizontalAlignment="Left" />
-                    <TextBlock Text="12°c" FontSize="46" Margin="0 20 0 0"/>
+                <StackPanel x:Name="LeftStack" Margin="50 60 0 0">
+                    <Image x:Name="ImageFon" Source="/Images/sun_cloud.png" Width="140" HorizontalAlignment="Left" />
+                    <TextBlock Text="12°c" FontSize="46" Margin="0 20 0 0" />
                     <TextBlock Text="Понедельник, 16:00" FontSize="18" FontWeight="SemiBold" Margin="0 15 0 0"/>
                     <Separator Background="#dadada" Margin="3 30 40 30" Height="0.8"/>
                     <StackPanel Orientation="Horizontal">
-                        <Image Source="/Images/cloud.png" Width="20" Height="20"/>
-                        <TextBlock Text="Облачно" FontSize="14" FontWeight="SemiBold" Margin="10 0 0 0" VerticalAlignment="Center"/>
+                        <Image x:Name="CloudsImage" Source="/Images/cloud.png" Width="20" Height="20"/>
+                        <TextBlock x:Name="CloudsTB" Text="Облачно" FontSize="14" FontWeight="SemiBold" Margin="10 0 0 0" VerticalAlignment="Center"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 15 0 77">
                         <Image Source="/Images/water.png" Width="20" Height="20"/>
@@ -52,12 +54,15 @@
             <StackPanel>
                 <Grid Margin="40 30 40 10">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <Label Content="Сегодня" Style="{StaticResource textButton}"/>
-                        <Label Content="Неделя" Style="{StaticResource activeTextButton}" Margin="15 0 0 0"/>
+                        <Label Content="Weather Report" Style="{StaticResource textButton}"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right">
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,50,0">
                         <Button Content="°C" Style="{StaticResource button}" Background="#1A1A1A" Foreground="#FFFFFF"/>
                         <Button Content="°F" Style="{StaticResource button}" Margin="10 0 0 0"/>
+                        <Image Source="/Images/vertical_line.png" Height="30" VerticalAlignment="Center"/>
+                    </StackPanel>
+                    <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
+                        <Image x:Name="CloseImage1" Source="/Images/close_white.png" Height="38" Width="38" MouseLeave="CloseImage_MouseLeave" MouseEnter="CloseImage_MouseEnter" MouseLeftButtonDown="CloseImage_MouseLeftButtonDown"/>
                     </StackPanel>
                 </Grid>
                 <StackPanel Orientation="Horizontal" Margin="40 20 0 20">
@@ -88,7 +93,7 @@
                     <Border Style="{StaticResource widgetBorder}" Height="223" Width="432">
                         <Image x:Name="mapImage" Source="/Images/map.png" Margin="-19,-16,-26,-6" Stretch="Fill"/>
                     </Border>
-                    <Border Style="{StaticResource widgetBorder}" BorderBrush="#03A9F4" HorizontalAlignment="Left" >
+                    <Border Style="{StaticResource widgetBorder}"  HorizontalAlignment="Left" >
                         <StackPanel>
                             <TextBlock Text="Восход и закат солнца" Style="{StaticResource titleText}"/>
 
