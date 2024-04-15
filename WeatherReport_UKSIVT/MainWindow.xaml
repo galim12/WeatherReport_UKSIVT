@@ -25,8 +25,8 @@
                         </Grid.ColumnDefinitions>
 
                         <Image Source="/Images/explore.png" Height="18" Margin="5 0 0 0"/>
-                        <TextBlock x:Name="textSearch" MouseDown="textSearch_MouseDown" Text="Поиск..." Style="{StaticResource textHint}"/>
-                        <TextBox Name="txtSearch" TextChanged="txtSearch_TextChanged" Style="{StaticResource textBox}"/>
+                        <TextBlock x:Name="textSearch" Text="Поиск..." Style="{StaticResource textHint}"/>
+                        <TextBox Name="txtSearch" Style="{StaticResource textBox}"/>
 
                     </Grid>
                 </Border>
@@ -34,8 +34,8 @@
 
                 <StackPanel x:Name="LeftStack" Margin="50 60 0 0">
                     <Image x:Name="ImageFon" Source="/Images/sun_cloud.png" Width="140" HorizontalAlignment="Left" />
-                    <TextBlock Text="12°c" FontSize="46" Margin="0 20 0 0" />
-                    <TextBlock Text="Понедельник, 16:00" FontSize="18" FontWeight="SemiBold" Margin="0 15 0 0"/>
+                    <TextBlock x:Name="CurrentTemperatureTB" Text="12°c" FontSize="46" Margin="0 20 0 0" />
+                    <TextBlock x:Name="DayOfWeekTextBlock" Text="Понедельник, 16:00" FontSize="18" FontWeight="SemiBold" Margin="0 15 0 0"/>
                     <Separator Background="#dadada" Margin="3 30 40 30" Height="0.8"/>
                     <StackPanel Orientation="Horizontal">
                         <Image x:Name="CloudsImage" Source="/Images/cloud.png" Width="20" Height="20"/>
@@ -43,14 +43,14 @@
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" Margin="0 15 0 77">
                         <Image Source="/Images/water.png" Width="20" Height="20"/>
-                        <TextBlock Text="Осадки - 30%" FontSize="14" FontWeight="SemiBold" Margin="10 0 0 0" VerticalAlignment="Center"/>
+                        <TextBlock x:Name="PrecipitationTB" Text="Влажность " FontSize="14" FontWeight="SemiBold" Margin="10 0 0 0" VerticalAlignment="Center"/>
                     </StackPanel>
                 </StackPanel>
             </StackPanel>
         </Border>
 
         <!-- Right Panel -->
-        <Border Grid.Column="1" CornerRadius="0 30 30 0" MouseDown="Border_MouseDown" Background="#F6F6F6" >
+        <Border Grid.Column="1" CornerRadius="0 30 30 0" Background="#F6F6F6" >
             <StackPanel>
                 <Grid Margin="40 30 40 10">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
@@ -81,12 +81,12 @@
                             <TextBlock Text="Скорость ветра" Style="{StaticResource titleText}"/>
 
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock Text="7.70" FontSize="34" FontWeight="SemiBold"/>
-                                <TextBlock Text="км/ч" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
+                                <TextBlock x:Name="windSpeedTextBlock" Text="7.70" FontSize="34" FontWeight="SemiBold"/>
+                                <TextBlock Text="" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
                             </StackPanel>
                             <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
                                 <Image Source="/Images/dir.png" Width="25" Height="25" Margin="0 0 10 0"/>
-                                <TextBlock Text="Ю" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                <TextBlock x:Name="windDirectionTextBlock" Text="" FontWeight="SemiBold" VerticalAlignment="Center"/>
                             </StackPanel>
                         </Grid>
                     </Border>

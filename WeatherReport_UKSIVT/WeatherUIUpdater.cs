@@ -1,32 +1,70 @@
 ﻿using System;
+using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using static System.Net.Mime.MediaTypeNames.Image;
 
 public class WeatherUIUpdater
 {
     private readonly StackPanel _stackPanel;
     private readonly WeatherApiClient _weatherApiClient;
+    private readonly Image _image;
+    private readonly TextBlock _temperatureTextBlock;
+    private readonly TextBlock _dayOfWeekTextBlock;
+    private readonly TextBlock _cloudsTextBlock;
+    private readonly Image _cloudsImage;
+    private readonly TextBlock _precipitationTB;
+    private readonly TextBlock _windSpeedTextBlock;
+    private readonly TextBlock windDirectionTextBlock;
 
-    public WeatherUIUpdater(StackPanel stackPanel)
+    public WeatherUIUpdater(StackPanel stackPanel, Image image, TextBlock temperatureTextBlock, TextBlock dayOfWeekTextBlock, TextBlock cloudsTextBlock, Image cloudsImage, TextBlock precipitationTB, TextBlock windSpeedTextBlock, TextBlock windDirectionTextBlock)
     {
         _stackPanel = stackPanel;
+        _image = image;
+        _temperatureTextBlock = temperatureTextBlock;
+        _dayOfWeekTextBlock = dayOfWeekTextBlock;
+        _cloudsTextBlock = cloudsTextBlock;
+        _cloudsImage = cloudsImage;
+        _precipitationTB = precipitationTB;
+        _windSpeedTextBlock = windSpeedTextBlock;
         _weatherApiClient = new WeatherApiClient();
     }
 
-    public async Task UpdateWeatherUI()
+    public async Task UpdateWeatherUI(Image image, TextBlock temperatureTextBlock, TextBlock dayOfWeekTextBlock, TextBlock cloudsTextBlock, TextBlock precipitationTB, TextBlock windSpeedTextBlock, TextBlock windDirectionTextBlock)
     {
         var weatherData = await _weatherApiClient.GetWeatherDataAsync();
 
         if (weatherData != null)
         {
-            UpdateImage("/Images/" + weatherData.weather[0].icon + ".png");
-            UpdateTextBlock(weatherData.main.temp.ToString("0") + "°C", 0);
-            UpdateTextBlock(GetDayOfWeek(weatherData.dt, weatherData.timezone), 1); // Используем timezone
-            UpdateTextBlock("Облачность - " + weatherData.clouds.all + "%", 2); // Индекс обновлен
-            UpdateTextBlock("Осадки - " + (weatherData.clouds.all / 100.0) + "%", 3); // Индекс обновлен
+            UpdateImage(weatherData.weather[0].icon);
+            UpdateTextBlock(temperatureTextBlock, weatherData.main.temp.ToString("0") + "°C");
+            UpdateTextBlock(dayOfWeekTextBlock, GetDayOfWeek(weatherData.dt, weatherData.timezone));
+            UpdateTextBlock(cloudsTextBlock, weatherData.weather[0].description);
+            UpdateTextBlock(precipitationTB, "влажность - " + weatherData.main.humidity + "%");
+            UpdateTextBlock(windSpeedTextBlock, weatherData.wind.speed.ToString("0") + "км/ч");
+
+            UpdateWindDirection(windDirectionTextBlock, weatherData.wind.deg);
+
+
         }
     }
+    
+    public void UpdateWindDirection(TextBlock windDirectionTextBlock, int deg)
+    {
+        string direction = GetWindDirection(deg);
+        UpdateTextBlock(windDirectionTextBlock, direction);
+    }
+    public string GetWindDirection(int degree)
+    {
+        string[] directions = { "С", "ССВ", "СВ", "ВСВ", "В", "ВЮВ", "ЮВ", "ЮЮВ", "Ю", "ЮЮЗ", "ЮЗ", "ЗЮЗ", "З", "ЗСЗ", "СЗ", "ССЗ" };
+
+        int index = (int)Math.Round(degree / 22.5);
+        index %= 16;
+
+        return directions[index];
+    }
+
 
     private void UpdateImage(string icon)
     {
@@ -88,18 +126,15 @@ public class WeatherUIUpdater
         }
     }
 
-    private void UpdateTextBlock(string text, int index)
+    private void UpdateTextBlock(TextBlock textBlock, string text)
     {
-        var element = _stackPanel.Children[index + 1];
-
-        // Проверяем, что элемент является TextBlock перед обновлением
-        if (element is TextBlock textBlock)
+        if (textBlock != null)
         {
             textBlock.Text = text;
         }
         else
         {
-            Console.WriteLine("Элемент не является TextBlock");
+            Console.WriteLine("TextBlock is null");
         }
     }
 

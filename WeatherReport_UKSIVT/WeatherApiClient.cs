@@ -21,12 +21,12 @@ public class WeatherApiClient
                 return weatherData;
             }
             catch (HttpRequestException ex)
-            {
-                
+            {               
                 Console.WriteLine($"Ошибка HTTP-запроса: {ex.Message}");
-                return null;
+                return null;          
             }
         }
+
     }
 }
 
@@ -35,7 +35,9 @@ public class WeatherData
     public MainData main { get; set; }
     public Weather[] weather { get; set; }
     public Clouds clouds { get; set; }
+    public Wind wind {  get; set; }
     public long dt { get; set; }
+    
     public int timezone { get; set; }
 
 
@@ -44,6 +46,7 @@ public class WeatherData
 public class MainData
 {
     public double temp { get; set; }
+    public int humidity { get; set; }
 }
 
 public class Weather
@@ -56,3 +59,9 @@ public class Clouds
 {
     public int all { get; set; }
 }
+public class Wind
+{
+    public double speed { get; set; }
+    public int deg {  get; set; }
+}
+

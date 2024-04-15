@@ -21,8 +21,8 @@ namespace WeatherReport_UKSIVT
         public MainWindow()
         {
             InitializeComponent();
-            _weatherUIUpdater = new WeatherUIUpdater(LeftStack);
-            UpdateWeather();
+            _weatherUIUpdater = new WeatherUIUpdater(LeftStack, ImageFon, CurrentTemperatureTB, DayOfWeekTextBlock, CloudsTB, CloudsImage, PrecipitationTB, windSpeedTextBlock, windDirectionTextBlock);          
+            UpdateWeather();          
         }
 
         private void CloseImage_MouseEnter(object sender, MouseEventArgs e)
@@ -50,22 +50,7 @@ namespace WeatherReport_UKSIVT
 
         private async void UpdateWeather()
         {
-            await _weatherUIUpdater.UpdateWeatherUI();
-        }
-
-        private void textSearch_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
-
-        private void Border_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-
+            await _weatherUIUpdater.UpdateWeatherUI(CloudsImage, CurrentTemperatureTB, DayOfWeekTextBlock, CloudsTB, PrecipitationTB, windSpeedTextBlock, windDirectionTextBlock);
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)
@@ -73,8 +58,6 @@ namespace WeatherReport_UKSIVT
             var ShowFavorites = new FavouritesSpisok(); 
             ShowFavorites.Show();
             
-        }
-
-        
+        }       
     }
 }
