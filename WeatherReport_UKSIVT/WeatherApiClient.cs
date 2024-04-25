@@ -29,7 +29,6 @@ public class WeatherApiClient
 
     }
 }
-
 public class WeatherData
 {
     public MainData main { get; set; }
@@ -37,10 +36,8 @@ public class WeatherData
     public Clouds clouds { get; set; }
     public Wind wind {  get; set; }
     public long dt { get; set; }
-    
+  
     public int timezone { get; set; }
-
-
 }
 
 public class MainData

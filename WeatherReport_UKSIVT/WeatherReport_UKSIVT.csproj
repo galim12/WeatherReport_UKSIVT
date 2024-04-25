@@ -67,6 +67,9 @@
     <Compile Include="UserControls\WeatherCardDay.xaml.cs">
       <DependentUpon>WeatherCardDay.xaml</DependentUpon>
     </Compile>
+    <Compile Include="UserControls\WeatherView.xaml.cs">
+      <DependentUpon>WeatherView.xaml</DependentUpon>
+    </Compile>
     <Compile Include="WeatherApiClient.cs" />
     <Compile Include="WeatherUIUpdater.cs" />
     <Page Include="FavouritesSpisok.xaml">
@@ -90,6 +93,10 @@
       <Generator>MSBuild:Compile</Generator>
     </Page>
     <Page Include="UserControls\WeatherCardDay.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="UserControls\WeatherView.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>

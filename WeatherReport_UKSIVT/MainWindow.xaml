@@ -138,14 +138,22 @@
                                 <TextBlock Text="Средняя" FontWeight="SemiBold"/>
                                 <Image Source="/Images/happy.png" Width="18" Height="18" Margin="10 0 0 0"/>
                             </StackPanel>
-
-
                         </Grid>
                     </Border>
-
                 </WrapPanel>
+                <ListView x:Name="listView" Height="242" 
+                          d:ItemsSource="{d:SampleData ItemCount=3}" 
+                          SelectionChanged="ListView_SelectionChanged" 
+                          Width="198" BorderBrush="{x:Null}" 
+                          Background="{x:Null}">
+                    <ListView.ItemTemplate>
+                        <DataTemplate>
+                            <WrapPanel Orientation="Horizontal">
+                            </WrapPanel>
+                        </DataTemplate>
+                    </ListView.ItemTemplate>
+                </ListView>
             </StackPanel>
-
         </Border>
     </Grid>
 </Window>
