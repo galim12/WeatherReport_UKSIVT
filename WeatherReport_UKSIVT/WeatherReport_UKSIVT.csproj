@@ -69,6 +69,9 @@
     </Compile>
     <Compile Include="WeatherApiClient.cs" />
     <Compile Include="WeatherUIUpdater.cs" />
+    <Compile Include="Week\WeatherDayOfWeek.cs" />
+    <Compile Include="Week\WeatherWeekService.cs" />
+    <Compile Include="WindyApiClient.cs" />
     <Page Include="FavouritesSpisok.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>

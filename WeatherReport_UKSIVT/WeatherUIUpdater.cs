@@ -1,8 +1,10 @@
-﻿using System;
+﻿using Newtonsoft.Json;
+using System;
 using System.Security.Cryptography;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
+using WeatherReport_UKSIVT.UserControls;
 using static System.Net.Mime.MediaTypeNames.Image;
 
 public class WeatherUIUpdater
@@ -17,9 +19,12 @@ public class WeatherUIUpdater
     private readonly TextBlock _precipitationTB;
     private readonly TextBlock _windSpeedTextBlock;
     private readonly TextBlock windDirectionTextBlock;
+    private readonly Image _mapImage;
 
-    public WeatherUIUpdater(StackPanel stackPanel, Image image, TextBlock temperatureTextBlock, TextBlock dayOfWeekTextBlock, TextBlock cloudsTextBlock, Image cloudsImage, TextBlock precipitationTB, TextBlock windSpeedTextBlock, TextBlock windDirectionTextBlock)
+
+    public WeatherUIUpdater(StackPanel stackPanel, Image image, Image mapImage, TextBlock temperatureTextBlock, TextBlock dayOfWeekTextBlock, TextBlock cloudsTextBlock, Image cloudsImage, TextBlock precipitationTB, TextBlock windSpeedTextBlock, TextBlock windDirectionTextBlock)
     {
+        _mapImage = mapImage;
         _stackPanel = stackPanel;
         _image = image;
         _temperatureTextBlock = temperatureTextBlock;
@@ -30,6 +35,7 @@ public class WeatherUIUpdater
         _windSpeedTextBlock = windSpeedTextBlock;
         _weatherApiClient = new WeatherApiClient();
     }
+    
 
     public async Task UpdateWeatherUI(Image image, TextBlock temperatureTextBlock, TextBlock dayOfWeekTextBlock, TextBlock cloudsTextBlock, TextBlock precipitationTB, TextBlock windSpeedTextBlock, TextBlock windDirectionTextBlock)
     {
@@ -46,9 +52,12 @@ public class WeatherUIUpdater
 
             UpdateWindDirection(windDirectionTextBlock, weatherData.wind.deg);
 
+            
+
 
         }
     }
+
     
     public void UpdateWindDirection(TextBlock windDirectionTextBlock, int deg)
     {
@@ -63,6 +72,10 @@ public class WeatherUIUpdater
         index %= 16;
 
         return directions[index];
+    }
+    public WeatherUIUpdater(StackPanel stackPanel)
+    {
+        _stackPanel = stackPanel;
     }
 
 
@@ -123,9 +136,8 @@ public class WeatherUIUpdater
         if (_stackPanel.Children.Count > 0 && _stackPanel.Children[0] is Image image)
         {
             image.Source = new BitmapImage(new Uri(imagePath, UriKind.Relative));
-        }
+        }       
     }
-
     private void UpdateTextBlock(TextBlock textBlock, string text)
     {
         if (textBlock != null)
@@ -136,14 +148,12 @@ public class WeatherUIUpdater
         {
             Console.WriteLine("TextBlock is null");
         }
-    }
-
+    }   
     private string GetDayOfWeek(long unixTime, int timezoneOffset)
     {
         var utcDateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTime).ToUniversalTime();
         var localDateTime = utcDateTimeOffset.ToOffset(TimeSpan.FromSeconds(timezoneOffset)).DateTime;
         return localDateTime.ToString("dddd, HH:mm");
     }
-
-
+    
 }

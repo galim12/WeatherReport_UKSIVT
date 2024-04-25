@@ -6,12 +6,13 @@
         xmlns:local="clr-namespace:WeatherReport_UKSIVT"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" FontFamily="Cambria"
-        Background="Transparent" Height="439" Width="450">
+        Background="Transparent"  Height="439" Width="450" >
     <Grid>
         <Border CornerRadius="30 30 0 0" 
                 Background="Gainsboro" 
                 VerticalAlignment="Top" 
-                Height="51">
+                Height="51"
+                >
             <StackPanel Orientation="Horizontal" 
                         HorizontalAlignment="Right" 
                         VerticalAlignment="Center">

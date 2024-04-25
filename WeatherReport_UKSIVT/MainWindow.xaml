@@ -66,13 +66,13 @@
                     </StackPanel>
                 </Grid>
                 <StackPanel Orientation="Horizontal" Margin="40 20 0 20">
-                    <uc:CardDay Day="Воскресенье" MaxNum="16°" MinNum="3°" Source="/Images/sun.png"/>
-                    <uc:CardDay Day="Понедельник" MaxNum="15°" MinNum="6°" Source="/Images/sun_cloud.png"/>
-                    <uc:CardDay Day="Вторник" MaxNum="1°" MinNum="-10°" Source="/Images/snow.png"/>
-                    <uc:CardDay Day="Среда" MaxNum="7°" MinNum="-1°" Source="/Images/rain.png"/>
-                    <uc:CardDay Day="Четверг" MaxNum="14°" MinNum="3°" Source="/Images/rain_cloud.png"/>
-                    <uc:CardDay Day="Пятница" MaxNum="26°" MinNum="10°" Source="/Images/sun.png"/>
-                    <uc:CardDay Day="Суббота" MaxNum="3°" MinNum="-3°" Source="/Images/storm.png"/>
+                    <uc:CardDay x:Name="SundayCardDay" Day="Воскресенье" MaxNum="" MinNum="" Source="/Images/sun.png"/>
+                    <uc:CardDay x:Name="MondayCardDay" Day="Понедельник" MaxNum="" MinNum="" Source="/Images/sun_cloud.png"/>
+                    <uc:CardDay x:Name="TuesdayCardDay" Day="Вторник" MaxNum="" MinNum="" Source="/Images/snow.png"/>
+                    <uc:CardDay x:Name="WednesdayCardDay" Day="Среда" MaxNum="" MinNum="" Source="/Images/rain.png"/>
+                    <uc:CardDay x:Name="ThursdayCardDay" Day="Четверг" MaxNum="" MinNum="" Source="/Images/rain_cloud.png"/>
+                    <uc:CardDay x:Name="FridayCardDay" Day="Пятница" MaxNum="" MinNum="" Source="/Images/sun.png"/>
+                    <uc:CardDay x:Name="SaturdayCardDay" Day="Суббота" MaxNum="" MinNum="" Source="/Images/storm.png"/>
                 </StackPanel>
                 <TextBlock Text="На сегодня" FontSize="16" FontWeight="SemiBold" Margin="40 10 0 10"/>
                 <WrapPanel Margin="40 0 0 0">
@@ -91,7 +91,7 @@
                         </Grid>
                     </Border>
                     <Border Style="{StaticResource widgetBorder}" Height="223" Width="432">
-                        <Image x:Name="mapImage" Source="/Images/map.png" Margin="-19,-16,-26,-6" Stretch="Fill"/>
+                        <Image x:Name="mapImage" Source="" Margin="-19,-16,-26,-6" Stretch="Fill"/>
                     </Border>
                     <Border Style="{StaticResource widgetBorder}"  HorizontalAlignment="Left" >
                         <StackPanel>
