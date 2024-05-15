@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Net.Http;
 using System.Threading.Tasks;
-using System.Windows;
 using Newtonsoft.Json;
-
+using WeatherReport_UKSIVT.API;
 public class WeatherApiClient
 {
-    private const string WeatherMapApiKey = "f92c20202c6ad67391b1116545dc8561";
-    private const string WeatherMapApiUrl = "http://api.openweathermap.org/data/2.5/weather?q=UFA&units=metric&lang=ru&appid=" + WeatherMapApiKey;
-
     public async Task<WeatherData> GetWeatherDataAsync()
     {
         using (var client = new HttpClient())
         {
             try
             {
-                var response = await client.GetAsync(WeatherMapApiUrl);
+                var response = await client.GetAsync(WeatherUrls.SearchForecast("UFA"));
                 response.EnsureSuccessStatusCode();
                 var responseBody = await response.Content.ReadAsStringAsync();
                 var weatherData = JsonConvert.DeserializeObject<WeatherData>(responseBody);
@@ -34,20 +30,24 @@ public class WeatherApiClient
 public class WeatherData
 {
     public MainData main { get; set; }
+    public Coordinates coord { get; set; }
     public Weather[] weather { get; set; }
     public Clouds clouds { get; set; }
     public Wind wind {  get; set; }
     public long dt { get; set; }
-    
     public int timezone { get; set; }
-
-
 }
 
 public class MainData
 {
     public double temp { get; set; }
     public int humidity { get; set; }
+}
+
+public class Coordinates
+{
+    public string lon { get; set; }
+    public string lat { get; set; }
 }
 
 public class Weather

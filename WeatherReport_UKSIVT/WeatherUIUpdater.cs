@@ -1,32 +1,30 @@
-﻿using Newtonsoft.Json;
-using System;
-using System.Security.Cryptography;
+﻿using System;
 using System.Threading.Tasks;
 using System.Windows.Controls;
 using System.Windows.Media.Imaging;
-using WeatherReport_UKSIVT.UserControls;
-using static System.Net.Mime.MediaTypeNames.Image;
+using WeatherReport_UKSIVT.API;
+using System.Globalization;
+using CefSharp.Wpf;
 
 public class WeatherUIUpdater
 {
     private readonly StackPanel _stackPanel;
     private readonly WeatherApiClient _weatherApiClient;
     private readonly Image _image;
+    private readonly ChromiumWebBrowser _web;
     private readonly TextBlock _temperatureTextBlock;
     private readonly TextBlock _dayOfWeekTextBlock;
     private readonly TextBlock _cloudsTextBlock;
     private readonly Image _cloudsImage;
     private readonly TextBlock _precipitationTB;
     private readonly TextBlock _windSpeedTextBlock;
-    private readonly TextBlock windDirectionTextBlock;
-    private readonly Image _mapImage;
 
 
-    public WeatherUIUpdater(StackPanel stackPanel, Image image, Image mapImage, TextBlock temperatureTextBlock, TextBlock dayOfWeekTextBlock, TextBlock cloudsTextBlock, Image cloudsImage, TextBlock precipitationTB, TextBlock windSpeedTextBlock, TextBlock windDirectionTextBlock)
+    public WeatherUIUpdater(StackPanel stackPanel, Image image, ChromiumWebBrowser web, TextBlock temperatureTextBlock, TextBlock dayOfWeekTextBlock, TextBlock cloudsTextBlock, Image cloudsImage, TextBlock precipitationTB, TextBlock windSpeedTextBlock, TextBlock windDirectionTextBlock)
     {
-        _mapImage = mapImage;
         _stackPanel = stackPanel;
         _image = image;
+        _web = web;
         _temperatureTextBlock = temperatureTextBlock;
         _dayOfWeekTextBlock = dayOfWeekTextBlock;
         _cloudsTextBlock = cloudsTextBlock;
@@ -37,7 +35,7 @@ public class WeatherUIUpdater
     }
     
 
-    public async Task UpdateWeatherUI(Image image, TextBlock temperatureTextBlock, TextBlock dayOfWeekTextBlock, TextBlock cloudsTextBlock, TextBlock precipitationTB, TextBlock windSpeedTextBlock, TextBlock windDirectionTextBlock)
+    public async Task UpdateWeatherUI(Image image, ChromiumWebBrowser web, TextBlock temperatureTextBlock, TextBlock dayOfWeekTextBlock, TextBlock cloudsTextBlock, TextBlock precipitationTB, TextBlock windSpeedTextBlock, TextBlock windDirectionTextBlock)
     {
         var weatherData = await _weatherApiClient.GetWeatherDataAsync();
 
@@ -52,9 +50,7 @@ public class WeatherUIUpdater
 
             UpdateWindDirection(windDirectionTextBlock, weatherData.wind.deg);
 
-            
-
-
+            web.Address = WeatherUrls.PrecipitationMap(weatherData.coord.lat, weatherData.coord.lon);
         }
     }
 
@@ -81,57 +77,7 @@ public class WeatherUIUpdater
 
     private void UpdateImage(string icon)
     {
-        string imagePath;
-
-        // Подбираем путь к изображению в зависимости от значений icon
-        switch (icon)
-        {
-            case "01d": // ясно (день)
-                imagePath = "/Images/sun.png";
-                break;
-            //case "01n": // ясно (ночь)
-            //    imagePath = "/Images/clear_night.png";
-
-            case "02d": // немного облаков (день)
-                imagePath = "/Images/sun_cloud.png";
-                break;
-            case "03d": // облачно (день)
-            case "04d": // облачно (день)
-                imagePath = "/Images/cloud.png";
-                break;
-            //case "02n": // немного облаков (ночь)
-            //case "03n": // облачно (ночь)
-            //case "04n": // облачно (ночь)
-            //    imagePath = "/Images/cloudy_night.png";
-            //    break;
-            case "09d": // дождь (день)
-                imagePath = "/Images/rain_cloud.png";
-                break;
-            case "10d": // ливень (день)
-                imagePath = "/Images/rain.png";
-                break;
-            case "11d": // гроза (день)
-                imagePath = "/Images/storm.png";
-                break;
-            case "09n": // дождь (ночь)
-            case "10n": // ливень (ночь)
-            case "11n": // гроза (ночь)
-                imagePath = "/Images/storm.png";
-                break;
-            case "13d": // снег (день)
-                imagePath = "/Images/snow.png";
-                break;
-            case "13n": // снег (ночь)
-                imagePath = "/Images/snow.png";
-                break;
-            case "50d": // туман (день)
-            case "50n": // туман (ночь)
-                imagePath = "/Images/fog.png";
-                break;
-            default:
-                imagePath = "/Images/default.png"; // Если погода неопределенна
-                break;
-        }
+        string imagePath = Helper.GetImagePathByIcon(icon);
 
         if (_stackPanel.Children.Count > 0 && _stackPanel.Children[0] is Image image)
         {
@@ -153,7 +99,9 @@ public class WeatherUIUpdater
     {
         var utcDateTimeOffset = DateTimeOffset.FromUnixTimeSeconds(unixTime).ToUniversalTime();
         var localDateTime = utcDateTimeOffset.ToOffset(TimeSpan.FromSeconds(timezoneOffset)).DateTime;
-        return localDateTime.ToString("dddd, HH:mm");
+
+        var russianCulture = new CultureInfo("ru-RU");
+        return localDateTime.ToString("dddd, HH:mm", russianCulture);
     }
     
 }

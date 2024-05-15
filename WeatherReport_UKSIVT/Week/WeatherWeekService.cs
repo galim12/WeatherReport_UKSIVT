@@ -1,26 +1,22 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Net.Http;
-using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
+using WeatherReport_UKSIVT.API;
 
 namespace WeatherReport_UKSIVT.Week
 {
     public class WeatherWeekService
     {
-        private const string WeatherMapApiKey = "f92c20202c6ad67391b1116545dc8561";
-        private const string WeatherMapApiUrl = "http://api.openweathermap.org/data/2.5/forecast?q=Ufa&units=metric&cnt=7&appid=" + WeatherMapApiKey;
-
         public async Task<List<WeatherDayOfWeek>> GetWeatherForecastAsync()
         {
             using (var client = new HttpClient())
             {
                 try
                 {
-                    var response = await client.GetAsync(WeatherMapApiUrl);
+                    var response = await client.GetAsync(WeatherUrls.WeekForecast("UFA"));
                     response.EnsureSuccessStatusCode();
                     var responseBody = await response.Content.ReadAsStringAsync();
                     var weatherForecast = ParseWeatherForecast(responseBody);
@@ -28,27 +24,51 @@ namespace WeatherReport_UKSIVT.Week
                 }
                 catch (HttpRequestException ex)
                 {
-                    // Обработка ошибок запроса к API
+
                     MessageBox.Show($"Ошибка HTTP-запроса: {ex.Message}");
                     return null;
                 }
             }
         }
-
+        
         private List<WeatherDayOfWeek> ParseWeatherForecast(string responseBody)
         {
             var weatherForecast = new List<WeatherDayOfWeek>();
+            List<string> dates = new List<string>();
 
             dynamic json = JsonConvert.DeserializeObject(responseBody);
             foreach (var item in json.list)
             {
-                string dateString = item.dt_txt.ToString(); // Преобразуем dt_txt в строку
-                string dayOfWeek = DateTime.Parse(dateString).ToString("dddd");
+                string dateString = item.dt_txt.ToString();
+                string englishDayOfWeek = DateTime.Parse(dateString).DayOfWeek.ToString();
+
+                if (dates.Contains(englishDayOfWeek))
+                {
+                    continue;
+                }
+                dates.Add(englishDayOfWeek);
+
+                string russianDayOfWeek = Helper.TranslateDayOfWeekToRussian(englishDayOfWeek);
                 string maxTemp = $"{item.main.temp_max:0}°";
                 string minTemp = $"{item.main.temp_min:0}°";
-                string iconPath = $"/Images/{item.weather[0].icon}.png";
-
-                weatherForecast.Add(new WeatherDayOfWeek { DayOfWeek = dayOfWeek, MaxTemperature = maxTemp, MinTemperature = minTemp, IconPath = iconPath });
+                string iconCode = item.weather[0].icon.ToString();
+                string iconPath = Helper.GetImagePathByIcon(iconCode);
+                int wind = item.wind.speed;
+                int windDeg = item.wind.deg;
+                int humidity = item.main.humidity;
+                int visibility = item.visibility;
+                weatherForecast.Add(
+                    new WeatherDayOfWeek {
+                        DayOfWeek = russianDayOfWeek,
+                        MaxTemperature = maxTemp, 
+                        MinTemperature = minTemp, 
+                        IconPath = iconPath, 
+                        Wind = wind, 
+                        WindDeg = windDeg, 
+                        Humidity = humidity, 
+                        Visibility = visibility 
+                    }
+                );
             }
 
             return weatherForecast;

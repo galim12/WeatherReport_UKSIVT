@@ -35,7 +35,7 @@ namespace WeatherReport_UKSIVT
             dataList.Add(new MyData { IconSource = "/Images/icon2.png", ButtonContent = "Москва", DeleteSource = "/Images/delete_city.png" });
             dataList.Add(new MyData { IconSource = "/Images/icon2.png", ButtonContent = "Стерлитамак", DeleteSource = "/Images/delete_city.png" });
 
-            // Устанавливаем список данных в качестве источника данных для ListView
+            
             listView.ItemsSource = dataList;
         }
         private void CloseImage_MouseEnter(object sender, MouseEventArgs e)
