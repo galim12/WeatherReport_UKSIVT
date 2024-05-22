@@ -17,6 +17,10 @@ namespace WeatherReport_UKSIVT.Week
         public double Grnd_level { get; set; }
         public double Feels_like { get; set; }
         public double _3h { get; set; }
+        public double MaxTemperatureCelsius { get; set; }
+        public double MinTemperatureCelsius { get; set; }
+        public double MaxTemperatureFahrenheit => MaxTemperatureCelsius * 9 / 5 + 32;
+        public double MinTemperatureFahrenheit => MinTemperatureCelsius * 9 / 5 + 32;
 
 
     }

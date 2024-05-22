@@ -1,31 +1,44 @@
 ﻿using System;
+using System.Net;
 using System.Net.Http;
 using System.Threading.Tasks;
 using Newtonsoft.Json;
 using WeatherReport_UKSIVT.API;
 public class WeatherApiClient
 {
-    public async Task<WeatherData> GetWeatherDataAsync()
+    public async Task<WeatherData> GetWeatherDataAsync(string cityName)
     {
-
         using (var client = new HttpClient())
         {
             try
             {
-                var response = await client.GetAsync(WeatherUrls.SearchForecast("UFA"));
-                response.EnsureSuccessStatusCode();
-                var responseBody = await response.Content.ReadAsStringAsync();
-                var weatherData = JsonConvert.DeserializeObject<WeatherData>(responseBody);
-                return weatherData;
+                var response = await client.GetAsync(WeatherUrls.SearchForecast(cityName));
+
+                if (response.IsSuccessStatusCode)
+                {
+                    var responseBody = await response.Content.ReadAsStringAsync();
+                    var weatherData = JsonConvert.DeserializeObject<WeatherData>(responseBody);
+                    return weatherData;
+                }
+                else if (response.StatusCode == HttpStatusCode.NotFound)
+                {
+                    Console.WriteLine("Город не найден");
+                    return null;
+                }
+                else
+                {
+                    Console.WriteLine($"Ошибка HTTP-запроса: {response.StatusCode}");
+                    return null;
+                }
             }
             catch (HttpRequestException ex)
-            {               
+            {
                 Console.WriteLine($"Ошибка HTTP-запроса: {ex.Message}");
-                return null;          
+                return null;
             }
         }
-
     }
+
 }
 
 public class WeatherData

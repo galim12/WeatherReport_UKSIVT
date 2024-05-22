@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -19,24 +20,51 @@ namespace WeatherReport_UKSIVT
     /// </summary>
     public partial class FavouritesSpisok : Window
     {
+        public event Action<string> CitySelected;
+        private List<FavoriteCity> _favoriteCities;
         public FavouritesSpisok()
         {
             InitializeComponent();
-            // Создаем список данных
-            List<MyData> dataList = new List<MyData>();
+            LoadFavoriteCities();
+            listView.SelectionChanged += ListView_SelectionChanged;
 
-            // Добавляем элементы в список
-            dataList.Add(new MyData { IconSource = "/Images/sun.png", ButtonContent = "Уфа", DeleteSource= "/Images/delete_city.png" });
-            dataList.Add(new MyData { IconSource = "/Images/dir.png", ButtonContent = "Москва", DeleteSource = "/Images/delete_city.png" });
-            dataList.Add(new MyData { IconSource = "/Images/rain.png", ButtonContent = "Казань", DeleteSource = "/Images/delete_city.png" });
-            dataList.Add(new MyData { IconSource = "/Images/icon2.png", ButtonContent = "Питер", DeleteSource = "/Images/delete_city.png" });
-            dataList.Add(new MyData { IconSource = "/Images/storm.png", ButtonContent = "Хабаровск", DeleteSource = "/Images/delete_city.png" });
-            dataList.Add(new MyData { IconSource = "/Images/snow.png", ButtonContent = "Оренбург", DeleteSource = "/Images/delete_city.png" });
-            dataList.Add(new MyData { IconSource = "/Images/icon2.png", ButtonContent = "Москва", DeleteSource = "/Images/delete_city.png" });
-            dataList.Add(new MyData { IconSource = "/Images/icon2.png", ButtonContent = "Стерлитамак", DeleteSource = "/Images/delete_city.png" });
+        }
+        private void LoadFavoriteCities()
+        {
+            _favoriteCities = FavoriteCitiesManager.LoadFavoriteCitiesAsObjects();
+            listView.ItemsSource = _favoriteCities;
+        }
+        private async void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
 
-            
-            listView.ItemsSource = dataList;
+            var selectedCity = (sender as ListView).SelectedItem as FavoriteCity;
+
+            if (selectedCity != null)
+            {
+                try
+                {
+                    MainWindow mainWindow = Application.Current.MainWindow as MainWindow;
+                    mainWindow.cityNameView.Text = selectedCity.CityName;
+
+
+                    mainWindow.LoadWeatherData(selectedCity.CityName);
+                    mainWindow.UpdateWeather(selectedCity.CityName);
+                    this.Close();
+                }
+                catch (Exception ex)
+                {
+                    MessageBox.Show("Ошибка при смене города: " + ex.Message);
+                }
+            }
+        }
+        private void DeleteImage_MouseLeftButtonDown(object sender, MouseButtonEventArgs e)
+        {
+            var city = ((FrameworkElement)sender).DataContext as FavoriteCity;
+            if (city != null)
+            {
+                FavoriteCitiesManager.RemoveCity(city.CityName);
+                LoadFavoriteCities();
+            }
         }
         private void CloseImage_MouseEnter(object sender, MouseEventArgs e)
         {
@@ -62,27 +90,21 @@ namespace WeatherReport_UKSIVT
             Close();
         }
 
-        private void ListView_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-
-        }
-
-        private void textSearch_MouseDown(object sender, MouseButtonEventArgs e)
-        {
-
-        }
-
-        private void txtSearch_TextChanged(object sender, TextChangedEventArgs e)
-        {
-
-        }
+        
         public class MyData
         {
             public string IconSource { get; set; }
             public string ButtonContent { get; set; }
             public string DeleteSource { get; set; }
         }
+        public class FavoriteCity
+        {
+            public string CityName { get; set; }
+            public string IconSource { get; set; } = "/Images/city.png"; 
+            public string DeleteSource { get; set; } = "/Images/delete_city.png"; 
+        }
 
+        
     }
 }
 

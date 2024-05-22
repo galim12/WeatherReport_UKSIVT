@@ -5,6 +5,10 @@ using System.Windows.Media.Imaging;
 using WeatherReport_UKSIVT.API;
 using System.Globalization;
 using CefSharp.Wpf;
+using System.Windows;
+using static WeatherReport_UKSIVT.MessegeboxWindow;
+using WeatherReport_UKSIVT;
+
 public class WeatherUIUpdater
 {
     private readonly StackPanel _stackPanel;
@@ -23,6 +27,8 @@ public class WeatherUIUpdater
     private readonly TextBlock _grndTxt;
     private readonly TextBlock _rainTxt;
     private readonly TextBlock _windSpeedMaxTextBlock;
+    private bool isCelsius = true;
+    string defaultCity = "UFA";
 
 
 
@@ -47,9 +53,9 @@ public class WeatherUIUpdater
     }
    
 
-    public async Task UpdateWeatherUI(Image image, ChromiumWebBrowser web, TextBlock temperatureTextBlock, TextBlock dayOfWeekTextBlock, TextBlock cloudsTextBlock, TextBlock precipitationTB, TextBlock windSpeedTextBlock, TextBlock windDirectionTextBlock, TextBlock SunriseTxt, TextBlock SunsetTxt, TextBlock Humidity, TextBlock Visibility, TextBlock feelsTxt, TextBlock grndTxt, TextBlock rainTxt, TextBlock windSpeedMaxTextBlock)
+    public async Task UpdateWeatherUI(string cityName, Image image, ChromiumWebBrowser web, TextBlock temperatureTextBlock, TextBlock dayOfWeekTextBlock, TextBlock cloudsTextBlock, TextBlock precipitationTB, TextBlock windSpeedTextBlock, TextBlock windDirectionTextBlock, TextBlock SunriseTxt, TextBlock SunsetTxt, TextBlock Humidity, TextBlock Visibility, TextBlock feelsTxt, TextBlock grndTxt, TextBlock rainTxt, TextBlock windSpeedMaxTextBlock)
     {
-        var weatherData = await _weatherApiClient.GetWeatherDataAsync();
+        var weatherData = await _weatherApiClient.GetWeatherDataAsync(cityName);
 
         if (weatherData != null)
         {
@@ -82,9 +88,10 @@ public class WeatherUIUpdater
                 
                 UpdateTextBlock(rainTxt, "Осадков нет");
             }
-
+            
             UpdateTextBlock(feelsTxt, weatherData.main.feels_like.ToString("0"));
-
+            string clothingRecommendation = GetClothingRecommendation(weatherData.main.temp, weatherData.main.humidity, weatherData.weather[0].description);
+            new MessegeboxWindow(clothingRecommendation, MessageButtons.Ok).ShowDialog();
             web.Address = WeatherUrls.PrecipitationMap(weatherData.coord.lat, weatherData.coord.lon);
         }
     }
@@ -94,6 +101,49 @@ public class WeatherUIUpdater
         DateTime dateTime = new DateTime(1970, 1, 1, 0, 0, 0, 0, DateTimeKind.Utc);
         dateTime = dateTime.AddSeconds(unixTimeStamp).ToLocalTime();
         return dateTime;
+    }
+    public string GetClothingRecommendation(double temperatureCelsius, int humidity, string cloudsDescription)
+    {
+        string recommendation = "";
+
+        if (temperatureCelsius < 0)
+        {
+            recommendation = "На улице очень холодно. Необходимо надеть теплые вещи";
+        }
+        else if (temperatureCelsius >= 0 && temperatureCelsius < 10)
+        {
+            recommendation = "На улице холодно. Необходимо надеть теплые вещи.";
+        }
+        else if (temperatureCelsius >= 10 && temperatureCelsius < 20)
+        {
+            recommendation = "На улице прохладно. Можно надеть легкую куртку.";
+        }
+        else if (temperatureCelsius >= 20 && temperatureCelsius < 25)
+        {
+            recommendation = "На улице тепло. Можно надеть футболку или блузку.";
+        }
+        else
+        {
+            recommendation = "На улице жарко. Рекомендуется носить легкую одежду.";
+        }
+
+        
+        if (cloudsDescription.Contains("облачно") || cloudsDescription.Contains("пасмурно"))
+        {
+            recommendation += " На улице облачно, возможен дождь. Рекомендуется взять с собой зонтик или дождевик.";
+        }
+        else if (cloudsDescription.Contains("дождь") || cloudsDescription.Contains("ливень") || cloudsDescription.Contains("гроза"))
+        {
+            recommendation += " На улице идет дождь. Не забудьте взять с собой зонтик или дождевик.";
+        }
+
+        
+        if (humidity > 70)
+        {
+            recommendation += " Воздух влажный, так что не забудьте взять зонт.";
+        }
+
+        return recommendation;
     }
 
 
@@ -148,23 +198,22 @@ public class WeatherUIUpdater
 
 
     ////////
-    private bool isCelsius = true;
-
+    
     public void ToggleCelsiusUnit(object sender, EventArgs e)
     {
         isCelsius = true;
-        UpdateTemperatureUnit();
+        UpdateTemperatureUnit(defaultCity);
     }
 
     public void ToggleFahrenheitUnit(object sender, EventArgs e)
     {
         isCelsius = false;
-        UpdateTemperatureUnit();
+        UpdateTemperatureUnit(defaultCity);
     }
 
-    private async void UpdateTemperatureUnit()
+    private async void UpdateTemperatureUnit(string cityName)
     {
-        var weatherData = await _weatherApiClient.GetWeatherDataAsync();
+        var weatherData = await _weatherApiClient.GetWeatherDataAsync(cityName);
         if (weatherData != null)
         {
             double temperature = isCelsius ? weatherData.main.temp : ConvertCelsiusToFahrenheit(weatherData.main.temp);

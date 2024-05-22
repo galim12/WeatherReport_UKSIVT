@@ -1,0 +1,54 @@
+﻿<Window x:Class="WeatherReport_UKSIVT.MessegeboxWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:WeatherReport_UKSIVT"
+        mc:Ignorable="d"
+        Title="Weather Report" WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" FontFamily="Cambria"
+        Background="Transparent" Height="200" Width="400">
+    <Border CornerRadius="30 30 30 30" 
+                Background="White" 
+                BorderBrush="Black"
+                BorderThickness="1"
+                >
+        <StackPanel VerticalAlignment="Center">
+            <TextBlock x:Name="txtTitle"
+                           HorizontalAlignment="Center"
+                           FontSize="20" FontWeight="Bold"
+                               >Уведомление о погоде</TextBlock>
+
+            <StackPanel  HorizontalAlignment="Right"
+                     Margin="0,5,5,0"
+                     VerticalAlignment="Top"
+                     Grid.Column="1">
+            </StackPanel>
+            <TextBlock x:Name="txtMessage"
+                               HorizontalAlignment="Center"
+                               Grid.Row="0"
+                               Margin="5"
+                               FontSize="18"
+                               FontWeight="Medium"
+                               Width="auto"
+                               Height="auto"
+                        TextWrapping="Wrap"/>
+
+            <Button x:Name="btnOk"
+                            Click="btnOk_Click"
+                            Grid.Column="1"
+                            Margin="5"
+                            Width="100"
+                            Content="OK"
+                            ToolTip="Ok" 
+                            Style="{StaticResource button}"/>
+            <!--<Button x:Name="btnYes"
+                            Click="btnYes_Click"
+                            Grid.Column="1"
+                            Margin="5"
+                            Width="100"
+                            Content="Yes"
+                            ToolTip="Yes" 
+                            Style="{StaticResource button}"/>-->
+        </StackPanel>
+    </Border>
+</Window>

@@ -12,6 +12,10 @@ using System.Windows.Media;
 using OxyPlot;
 using OxyPlot.Series;
 using OxyPlot.Axes;
+using OxyPlot.Legends;
+using System.Collections.ObjectModel;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace WeatherReport_UKSIVT
 {
@@ -21,6 +25,7 @@ namespace WeatherReport_UKSIVT
         private readonly WeatherWeekService _weatherWeekService;
         private readonly WeatherApiClient _weatherApiClient;
         private List<WeatherDayOfWeek> weatherForecast;
+        private bool _isCelsius = true;
 
 
 
@@ -35,52 +40,103 @@ namespace WeatherReport_UKSIVT
                     WebView.SetZoomLevel(-3);
                 }
             };
-
+            
             _weatherUIUpdater = new WeatherUIUpdater(LeftStack, ImageFon, WebView, CurrentTemperatureTB, DayOfWeekTextBlock, CloudsTB, CloudsImage, PrecipitationTB, windSpeedTextBlock, windDirectionTextBlock, SunriseTxt, SunsetTxt, feelsTxt, grndTxt, rainTxt, windSpeedMaxTextBlock);
             celsiusButton.Click += CelsiusButton_Click;
             fahrenheitButton.Click += FahrenheitButton_Click;
 
-            LoadWeatherData();
-            UpdateWeather();
+            string defaultCity = "Уфа";
+            cityNameView.Text = defaultCity;
+            LoadWeatherData(defaultCity);
+            UpdateWeather(defaultCity);
             _weatherApiClient = new WeatherApiClient();
             _weatherWeekService = new WeatherWeekService();
 
         }
-        private async void LoadWeatherData()
+        
+
+        
+
+        public async void LoadWeatherData(string cityName)
         {
             WeatherWeekService weatherService = new WeatherWeekService();
-            List<WeatherDayOfWeek> weatherData = await weatherService.GetWeatherForecastAsync();
+            List<WeatherDayOfWeek> weatherData = await weatherService.GetWeatherForecastAsync(cityName);
 
             if (weatherData != null)
             {
-                PlotModel plotModel = new PlotModel { Title = "Изменение температуры за 5 дней" };
+                PlotModel plotModel = new PlotModel { Title = "Как будет меняться погода в течении 5 дней" };
+
+                // Настройка осей
+                var valueAxis = new LinearAxis
+                {
+                    Position = AxisPosition.Left,
+                    Title = "Температура °C",
+                    MajorGridlineStyle = LineStyle.Solid,
+                    MinorGridlineStyle = LineStyle.Dot
+                };
+                plotModel.Axes.Add(valueAxis);
 
                 var dateAxis = new DateTimeAxis
                 {
                     Position = AxisPosition.Bottom,
-                    StringFormat = "dd/MM/yyyy",
-                    Title = "Дата"
+                    StringFormat = "dd/MM",
+                    Title = "Дата",
+                    MajorGridlineStyle = LineStyle.Solid,
+                    MinorGridlineStyle = LineStyle.Dot
                 };
                 plotModel.Axes.Add(dateAxis);
 
-                var valueAxis = new LinearAxis
+                // Настройка серий данных
+                LineSeries maxTempSeries = new LineSeries
                 {
-                    Position = AxisPosition.Left,
-                    Title = "Температура (°C)"
+                    Title = "Макс. температура",
+                    MarkerType = MarkerType.Circle,
+                    MarkerSize = 4,
+                    MarkerStroke = OxyColors.Red,
+                    Color = OxyColors.Red
                 };
-                plotModel.Axes.Add(valueAxis);
 
-                LineSeries maxTempSeries = new LineSeries { Title = "Макс. температура", MarkerType = MarkerType.Circle };
-                LineSeries minTempSeries = new LineSeries { Title = "Мин. температура", MarkerType = MarkerType.Circle };
+                LineSeries minTempSeries = new LineSeries
+                {
+                    Title = "Мин. температура",
+                    MarkerType = MarkerType.Circle,
+                    MarkerSize = 4,
+                    MarkerStroke = OxyColors.Blue,
+                    Color = OxyColors.Blue
+                };
 
+                
                 foreach (var day in weatherData)
                 {
-                    maxTempSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(day.Date), double.Parse(day.MaxTemperature.TrimEnd('°'))));
-                    minTempSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(day.Date), double.Parse(day.MinTemperature.TrimEnd('°'))));
+                    if (double.TryParse(day.MaxTemperature.TrimEnd('°', 'C', 'F'), out double maxTemp) &&
+                        double.TryParse(day.MinTemperature.TrimEnd('°', 'C', 'F'), out double minTemp))
+                    {
+                        maxTempSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(day.Date), maxTemp));
+                        minTempSeries.Points.Add(new DataPoint(DateTimeAxis.ToDouble(day.Date), minTemp));
+                    }
+                    else
+                    {
+                        
+                        MessageBox.Show($"Не удалось преобразовать строку температуры для даты {day.Date}");
+                    }
                 }
 
                 plotModel.Series.Add(maxTempSeries);
                 plotModel.Series.Add(minTempSeries);
+
+                
+                var legend = new Legend
+                {
+                    LegendPosition = LegendPosition.TopRight,
+                    LegendPlacement = LegendPlacement.Outside,
+                    LegendOrientation = LegendOrientation.Horizontal,
+                    LegendBackground = OxyColors.White,
+                    LegendBorder = OxyColors.Black,
+                    LegendBorderThickness = 1,
+                    LegendMargin = 10,
+                    LegendPadding = 10,
+                };
+                plotModel.Legends.Add(legend);
 
                 WeatherPlot.Model = plotModel;
             }
@@ -90,28 +146,51 @@ namespace WeatherReport_UKSIVT
             }
         }
 
+       
         private void CelsiusButton_Click(object sender, RoutedEventArgs e)
         {
+            _isCelsius = true;
             _weatherUIUpdater.ToggleCelsiusUnit(sender, e);
-            
+
             celsiusButton.Background = Brushes.Black;
             celsiusButton.Foreground = Brushes.White;
-            
 
             fahrenheitButton.ClearValue(Button.BackgroundProperty);
             fahrenheitButton.ClearValue(Button.ForegroundProperty);
+
+            UpdateTemperatureUnits();
         }
 
         private void FahrenheitButton_Click(object sender, RoutedEventArgs e)
         {
+            _isCelsius = false;
             _weatherUIUpdater.ToggleFahrenheitUnit(sender, e);
-            
+
             fahrenheitButton.Background = Brushes.Black;
             fahrenheitButton.Foreground = Brushes.White;
-            
 
             celsiusButton.ClearValue(Button.BackgroundProperty);
             celsiusButton.ClearValue(Button.ForegroundProperty);
+
+            UpdateTemperatureUnits();
+        }
+        private void UpdateTemperatureUnits()
+        {
+            foreach (var day in weatherForecast)
+            {
+                if (_isCelsius)
+                {
+                    day.MaxTemperature = $"{day.MaxTemperatureCelsius:0}°C";
+                    day.MinTemperature = $"{day.MinTemperatureCelsius:0}°C";
+                }
+                else
+                {
+                    day.MaxTemperature = $"{day.MaxTemperatureFahrenheit:0}°F";
+                    day.MinTemperature = $"{day.MinTemperatureFahrenheit:0}°F";
+                }
+            }
+
+            UpdateWeatherCards();
         }
 
         private void CloseImage_MouseEnter(object sender, MouseEventArgs e)
@@ -137,29 +216,60 @@ namespace WeatherReport_UKSIVT
             Application.Current.Shutdown();
         }
 
-        private async void UpdateWeather()
-        {
-            await _weatherUIUpdater.UpdateWeatherUI(CloudsImage, WebView, CurrentTemperatureTB, DayOfWeekTextBlock, CloudsTB, PrecipitationTB, windSpeedTextBlock, windDirectionTextBlock, SunriseTxt, SunsetTxt, Humidity, Visibility, feelsTxt, grndTxt, rainTxt, windSpeedMaxTextBlock);
+        public async void UpdateWeather(string cityName)
+        {           
+            await _weatherUIUpdater.UpdateWeatherUI(cityName, CloudsImage, WebView, CurrentTemperatureTB, DayOfWeekTextBlock, CloudsTB, PrecipitationTB, windSpeedTextBlock, windDirectionTextBlock, SunriseTxt, SunsetTxt, Humidity, Visibility, feelsTxt, grndTxt, rainTxt, windSpeedMaxTextBlock);
 
-            weatherForecast = await _weatherWeekService.GetWeatherForecastAsync();
+            weatherForecast = await _weatherWeekService.GetWeatherForecastAsync(cityName);
 
-
-            if (weatherForecast != null) 
+            if (weatherForecast != null)
             {
-                foreach (WeatherDayOfWeek dayForecast in weatherForecast)
+                for (int i = 0; i < weatherForecast.Count; i++)
                 {
-                    CardDay day = new CardDay();
-                    day.MouseEnter += (sender, e) => Day_MouseEnter(sender, e, dayForecast);
-                    day.Day = dayForecast.DayOfWeek;
-                    day.MaxNum = dayForecast.MaxTemperature;
-                    day.MinNum = dayForecast.MinTemperature;
-                    day.Source = dayForecast.IconPath;
-                    //day.Grnd = dayForecast.Grnd_level;
-                    //day.Feels = dayForecast.Feels_like;
-                    DayCardPanel.Children.Add(day);
+                    WeatherDayOfWeek dayForecast = weatherForecast[i];
 
+                    if (i < DayCardPanel.Children.Count)
+                    {
+                        // Обновляем существующий CardDay
+                        CardDay day = (CardDay)DayCardPanel.Children[i];
+                        UpdateCardDay(day, dayForecast);
+                    }
+                    else
+                    {
+                        // Добавляем новые CardDay, если недостаточно существующих
+                        CardDay day = new CardDay();
+                        UpdateCardDay(day, dayForecast);
+                        day.MouseEnter += (sender, e) => Day_MouseEnter(sender, e, dayForecast);
+                        DayCardPanel.Children.Add(day);
+                    }
+                }
+
+                // Удаляем лишние CardDay, если они есть
+                while (DayCardPanel.Children.Count > weatherForecast.Count)
+                {
+                    DayCardPanel.Children.RemoveAt(DayCardPanel.Children.Count - 1);
                 }
             }
+        }
+        private void UpdateWeatherCards()
+        {
+            for (int i = 0; i < weatherForecast.Count; i++)
+            {
+                WeatherDayOfWeek dayForecast = weatherForecast[i];
+
+                if (i < DayCardPanel.Children.Count)
+                {
+                    CardDay day = (CardDay)DayCardPanel.Children[i];
+                    UpdateCardDay(day, dayForecast);
+                }
+            }
+        }
+        private void UpdateCardDay(CardDay card, WeatherDayOfWeek dayForecast)
+        {
+            card.Day = dayForecast.DayOfWeek;
+            card.MaxNum = dayForecast.MaxTemperature;
+            card.MinNum = dayForecast.MinTemperature;
+            card.Source = dayForecast.IconPath;
         }
 
         private void Day_MouseEnter(object sender, MouseEventArgs e, WeatherDayOfWeek dayForecast)
@@ -174,10 +284,10 @@ namespace WeatherReport_UKSIVT
             windDirectionTextBlock.Text = directions[index];
             windSpeedTextBlock.Text = day.Wind.ToString() + "км/ч";
             windSpeedMaxTextBlock.Text = day.GustWind.ToString() + "км/ч";
-            feelsTxt.Text = day.Feels_like.ToString();
-            grndTxt.Text = day.Grnd_level.ToString();
+            feelsTxt.Text = day.Feels_like.ToString("0");
+            grndTxt.Text = day.Grnd_level.ToString("0");
             Humidity.Text = day.Humidity.ToString();
-            //rainTxt.Text = day._3h.ToString();
+            
             
             //влажность
             if (day.Humidity >= 60)
@@ -234,12 +344,7 @@ namespace WeatherReport_UKSIVT
                 VisibilityIcon.Source = new BitmapImage(new Uri("/Images/dislike.png", UriKind.Relative));
             }
         }
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            var ShowFavorites = new FavouritesSpisok(); 
-            ShowFavorites.Show();
-        }
+      
 
         private WeatherDayOfWeek GetDataDayWeather(string dayNameRu)
         {
@@ -255,6 +360,54 @@ namespace WeatherReport_UKSIVT
             }
 
             return null;
+        }
+
+        private void imageBtn_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            try
+            {
+                string cityName = cityTextBox.Text;
+                cityNameView.Text = cityName;
+                LoadWeatherData(cityName);
+                UpdateWeather(cityName);
+                cityTextBox.Text = "";
+            }
+            catch (Exception ex)
+            {
+                cityNameView.Text = "";
+                MessageBox.Show("Некорректно введен город" + ex.Message);
+                
+            }
+        }
+
+        private void favBtn_MouseDown(object sender, MouseButtonEventArgs e)
+        {
+            cityTextBox.Text = "";
+            var ShowFavorites = new FavouritesSpisok(); 
+            ShowFavorites.Show();
+            
+        }
+
+        private void FavouritesWindow_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                string cityName = cityTextBox.Text;
+                if (!string.IsNullOrEmpty(cityName))
+                {
+                    FavoriteCitiesManager.AddCity(cityName);
+                    cityTextBox.Text = "";
+
+                }
+                else
+                {
+                    MessageBox.Show("Введите название города");
+                }
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show("Ошибка при добавлении города в избранное: " + ex.Message);
+            }
         }
     }
 }

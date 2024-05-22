@@ -27,15 +27,18 @@
                             <ColumnDefinition Width="*" />
                         </Grid.ColumnDefinitions>
 
-                        <Image Source="/Images/explore.png" Height="18" Margin="5 0 0 0"/>
+                        <Image x:Name="imageBtn" Source="/Images/explore.png" Height="18" Margin="5,0,0,0" MouseDown="imageBtn_MouseDown" VerticalAlignment="Bottom"/>
 
                         <TextBox x:Name="cityTextBox" Style="{StaticResource textBox}" IsEnabled="True"/>
 
                     </Grid>
                 </Border>
-                <Button Content="Добавить в избранное" Style="{StaticResource button}" Width="156" Margin="0,10,0,0" Height="46" Click="Button_Click"/>
-
-                <StackPanel x:Name="LeftStack" Margin="50 60 0 0">
+                <StackPanel Orientation="Horizontal">
+                    <Button x:Name="FavouritesWindow" Content="Добавить в избранное" Style="{StaticResource button}" Width="156" Margin="15,10,0,0" Height="46" Click="FavouritesWindow_Click"/>
+                    <Image x:Name="favBtn" Source="/Images/favorite.png" Height="30" Margin="45,10,0,0" MouseDown="favBtn_MouseDown" Width="42"/>
+                </StackPanel>
+                <TextBlock x:Name="cityNameView" Text="" FontSize="36" Margin="0,10,0,0" HorizontalAlignment="Center" FontWeight="Bold" />
+                <StackPanel x:Name="LeftStack" Margin="50 60 0 0" Height="516">
                     <Image x:Name="ImageFon" Source="/Images/sun_cloud.png" Width="140" HorizontalAlignment="Left" />
                     <TextBlock x:Name="CurrentTemperatureTB" Text="12°C" FontSize="46" Margin="0 20 0 0" />
                     <TextBlock x:Name="DayOfWeekTextBlock" Text="Понедельник, 16:00" FontSize="18" FontWeight="SemiBold" Margin="0 15 0 0"/>
@@ -64,7 +67,7 @@
                             </StackPanel>
                         </StackPanel>
                     </StackPanel>
-                    
+
 
                 </StackPanel>
             </StackPanel>
@@ -75,7 +78,8 @@
             <StackPanel>
                 <Grid Margin="40 30 40 10">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
-                        <Label Content="Weather Report" Style="{StaticResource textButton}"/>
+                        
+                        <Image Source="/Images/report.jpg" Height="45" Width="143"></Image>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,50,0">
                         <Button x:Name="celsiusButton" Content="°C" Style="{StaticResource button}" Background="#1A1A1A" Foreground="#FFFFFF"/>
@@ -187,13 +191,13 @@
 
                             </Grid>
                         </Border>
-                        <Border Style="{StaticResource widgetBorder}" Width="668">
+                        <Border Style="{StaticResource widgetBorderGraphic}" Width="668">
                             <Grid>
                                 <oxy:PlotView Name="WeatherPlot" />
                             </Grid>
                         </Border>
 
-                        <Border Style="{StaticResource widgetBorder}" Height="223" Width="644">
+                        <Border Style="{StaticResource widgetBorderGraphic}" Width="644">
                             <cefSharp:ChromiumWebBrowser  x:Name="WebView"  Margin="-20,-16,-21,-16">
                             </cefSharp:ChromiumWebBrowser>
                         </Border>
