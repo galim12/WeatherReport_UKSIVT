@@ -6,6 +6,7 @@
         xmlns:uc="clr-namespace:WeatherReport_UKSIVT.UserControls"
         xmlns:cefSharp="clr-namespace:CefSharp.Wpf;assembly=CefSharp.Wpf"
         xmlns:cefSharpCore="clr-namespace:CefSharp;assembly=CefSharp.Core"
+        xmlns:oxy="http://oxyplot.org/wpf"
         mc:Ignorable="d"
         WindowStartupLocation="CenterScreen" WindowStyle="None" AllowsTransparency="True" FontFamily="Cambria"
         Background="Transparent" Height="750" Width="995">
@@ -27,8 +28,8 @@
                         </Grid.ColumnDefinitions>
 
                         <Image Source="/Images/explore.png" Height="18" Margin="5 0 0 0"/>
-                        <TextBlock x:Name="textSearch" Text="Поиск..." Style="{StaticResource textHint}"/>
-                        <TextBox Name="txtSearch" Style="{StaticResource textBox}"/>
+
+                        <TextBox x:Name="cityTextBox" Style="{StaticResource textBox}" IsEnabled="True"/>
 
                     </Grid>
                 </Border>
@@ -36,31 +37,49 @@
 
                 <StackPanel x:Name="LeftStack" Margin="50 60 0 0">
                     <Image x:Name="ImageFon" Source="/Images/sun_cloud.png" Width="140" HorizontalAlignment="Left" />
-                    <TextBlock x:Name="CurrentTemperatureTB" Text="12°c" FontSize="46" Margin="0 20 0 0" />
+                    <TextBlock x:Name="CurrentTemperatureTB" Text="12°C" FontSize="46" Margin="0 20 0 0" />
                     <TextBlock x:Name="DayOfWeekTextBlock" Text="Понедельник, 16:00" FontSize="18" FontWeight="SemiBold" Margin="0 15 0 0"/>
                     <Separator Background="#dadada" Margin="3 30 40 30" Height="0.8"/>
                     <StackPanel Orientation="Horizontal">
                         <Image x:Name="CloudsImage" Source="/Images/cloud.png" Width="20" Height="20"/>
                         <TextBlock x:Name="CloudsTB" Text="Облачно" FontSize="14" FontWeight="SemiBold" Margin="10 0 0 0" VerticalAlignment="Center"/>
                     </StackPanel>
-                    <StackPanel Orientation="Horizontal" Margin="0 15 0 77">
+                    <StackPanel Orientation="Horizontal" Margin="0,15,0,50">
                         <Image Source="/Images/water.png" Width="20" Height="20"/>
                         <TextBlock x:Name="PrecipitationTB" Text="Влажность " FontSize="14" FontWeight="SemiBold" Margin="10 0 0 0" VerticalAlignment="Center"/>
                     </StackPanel>
+                    <StackPanel Orientation="Horizontal">
+                        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Left" Height="41">
+                            <Image Source="/Images/sunrise.png" Width="40" Height="40" Margin="0 0 10 0"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock x:Name="SunriseTxt"  Text="6:41" FontSize="16" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </StackPanel>
+
+                        <StackPanel Orientation="Horizontal"  HorizontalAlignment="Right" Height="59" VerticalAlignment="Center" Margin="10
+                                    ,0,0,0">
+                            <Image Source="/Images/sunset.png" Width="40" Height="40" Margin="0 0 10 0"/>
+                            <StackPanel VerticalAlignment="Center">
+                                <TextBlock x:Name="SunsetTxt" Text="19:51" FontSize="16" FontWeight="SemiBold"/>
+                            </StackPanel>
+                        </StackPanel>
+                    </StackPanel>
+                    
+
                 </StackPanel>
             </StackPanel>
         </Border>
 
         <!-- Right Panel -->
-        <Border Grid.Column="1" CornerRadius="0 30 30 0" Background="#F6F6F6" >
+        <Border Grid.Column="1" CornerRadius="0 30 30 0" Background="#F6F6F6" IsEnabled="True" >
             <StackPanel>
                 <Grid Margin="40 30 40 10">
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Left" VerticalAlignment="Center">
                         <Label Content="Weather Report" Style="{StaticResource textButton}"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" Margin="0,0,50,0">
-                        <Button Content="°C" Style="{StaticResource button}" Background="#1A1A1A" Foreground="#FFFFFF"/>
-                        <Button Content="°F" Style="{StaticResource button}" Margin="10 0 0 0"/>
+                        <Button x:Name="celsiusButton" Content="°C" Style="{StaticResource button}" Background="#1A1A1A" Foreground="#FFFFFF"/>
+                        <Button x:Name="fahrenheitButton" Content="°F" Style="{StaticResource button}" Margin="10 0 0 0"/>
                         <Image Source="/Images/vertical_line.png" Height="30" VerticalAlignment="Center"/>
                     </StackPanel>
                     <StackPanel Orientation="Horizontal" HorizontalAlignment="Right" VerticalAlignment="Center">
@@ -70,76 +89,127 @@
                 <StackPanel x:Name="DayCardPanel" Orientation="Horizontal" Margin="40 20 0 20">
                 </StackPanel>
                 <TextBlock x:Name="ForDay" Text="На сегодня" FontSize="16" FontWeight="SemiBold" Margin="40 10 0 10"/>
-                <WrapPanel Margin="40 0 0 0">
-                    <Border Style="{StaticResource widgetBorder}" HorizontalAlignment="Left">
-                        <Grid>
-                            <TextBlock Text="Скорость ветра" Style="{StaticResource titleText}"/>
+                <ScrollViewer  VerticalScrollBarVisibility="Visible" Height="488">
+                    <WrapPanel Margin="40 0 0 0">
+                        <Border Style="{StaticResource widgetBorder}" HorizontalAlignment="Left">
+                            <Grid>
+                                <TextBlock Text="Скорость ветра" Style="{StaticResource titleText}"/>
 
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock x:Name="windSpeedTextBlock" Text="7.70" FontSize="34" FontWeight="SemiBold"/>
-                                <TextBlock Text="" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-                                <Image Source="/Images/dir.png" Width="25" Height="25" Margin="0 0 10 0"/>
-                                <TextBlock x:Name="windDirectionTextBlock" Text="" FontWeight="SemiBold" VerticalAlignment="Center"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                    <Border Style="{StaticResource widgetBorder}" Height="223" Width="432">
-                        <cefSharp:ChromiumWebBrowser  x:Name="WebView"  Margin="-20,-16,-21,-16">
-                        </cefSharp:ChromiumWebBrowser>
-                    </Border>
-                    <Border Style="{StaticResource widgetBorder}"  HorizontalAlignment="Left" >
-                        <StackPanel>
-                            <TextBlock Text="Восход и закат солнца" Style="{StaticResource titleText}"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock x:Name="windSpeedTextBlock" Text="" FontSize="34" FontWeight="SemiBold"/>
+                                    <TextBlock Text="" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                                    <Image Source="/Images/dir.png" Width="25" Height="25" Margin="0 0 10 0"/>
+                                    <TextBlock x:Name="windDirectionTextBlock" Text="" FontWeight="SemiBold" VerticalAlignment="Center"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource widgetBorder}" HorizontalAlignment="Left">
+                            <Grid>
+                                <TextBlock Text="Порыв ветра" Style="{StaticResource titleText}"/>
 
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 25 0 0">
-                                <Image Source="/Images/sunrise.png" Width="40" Height="40" Margin="0 0 10 0"/>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock x:Name="Sunrise"  Text="6:41" FontSize="16" FontWeight="SemiBold"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock x:Name="windSpeedMaxTextBlock" Text="" FontSize="34" FontWeight="SemiBold"/>
+                                    <TextBlock Text="" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
+                                </StackPanel>
+
+                            </Grid>
+                        </Border>
+
+
+                        <!--<Border Style="{StaticResource widgetBorder}"  HorizontalAlignment="Left" >
+                            <StackPanel>
+                                <TextBlock Text="Восход и закат солнца" Style="{StaticResource titleText}"/>
+
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 25 0 0">
+                                    <Image Source="/Images/sunrise.png" Width="40" Height="40" Margin="0 0 10 0"/>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock x:Name="SunriseTxt"  Text="6:41" FontSize="16" FontWeight="SemiBold"/>
+                                    </StackPanel>
+                                </StackPanel>
+
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 10 0 0">
+                                    <Image Source="/Images/sunset.png" Width="40" Height="40" Margin="0 0 10 0"/>
+                                    <StackPanel VerticalAlignment="Center">
+                                        <TextBlock x:Name="SunsetTxt" Text="19:51" FontSize="16" FontWeight="SemiBold"/>
+                                    </StackPanel>
                                 </StackPanel>
                             </StackPanel>
-
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center" Margin="0 10 0 0">
-                                <Image Source="/Images/sunset.png" Width="40" Height="40" Margin="0 0 10 0"/>
-                                <StackPanel VerticalAlignment="Center">
-                                    <TextBlock x:Name="Sunset" Text="19:51" FontSize="16" FontWeight="SemiBold"/>
+                        </Border>-->
+                        <Border Style="{StaticResource widgetBorder}">
+                            <Grid>
+                                <TextBlock Text="Влажность" Style="{StaticResource titleText}"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock x:Name="Humidity" Text="00" FontSize="34" FontWeight="SemiBold"/>
+                                    <TextBlock Text="%" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
                                 </StackPanel>
-                            </StackPanel>
-                        </StackPanel>
-                    </Border>
-                    <Border Style="{StaticResource widgetBorder}">
-                        <Grid>
-                            <TextBlock Text="Влажность" Style="{StaticResource titleText}"/>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock x:Name="Humidity" Text="56" FontSize="34" FontWeight="SemiBold"/>
-                                <TextBlock Text="%" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
-                            </StackPanel>
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-                                <TextBlock x:Name="HumidityText" Text="Нормально" FontWeight="SemiBold"/>
-                                <Image x:Name="HumidityIcon" Source="/Images/like.png" Width="18" Height="18" Margin="10 0 0 0"/>
-                            </StackPanel>
-                        </Grid>
-                    </Border>
-                    <Border Style="{StaticResource widgetBorder}">
-                        <Grid>
-                            <TextBlock Text="Видимость" Style="{StaticResource titleText}" Margin="0,0,0,10"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                                    <TextBlock x:Name="HumidityText" Text="Нормально" FontWeight="SemiBold"/>
+                                    <Image x:Name="HumidityIcon" Source="/Images/like.png" Width="18" Height="18" Margin="10 0 0 0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource widgetBorder}">
+                            <Grid>
+                                <TextBlock Text="Видимость" Style="{StaticResource titleText}" Margin="0,0,0,10"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock x:Name="Visibility" Text="0.0" FontSize="34" FontWeight="SemiBold"/>
+                                    <TextBlock Text="км" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                                    <TextBlock x:Name="VisibilityName" Text="Средняя" FontWeight="SemiBold"/>
+                                    <Image x:Name="VisibilityIcon" Source="/Images/happy.png" Width="18" Height="18" Margin="10 0 0 0"/>
+                                </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource widgetBorder}">
+                            <Grid>
+                                <TextBlock Text="По ощущению" Style="{StaticResource titleText}" Margin="0,0,0,10"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock x:Name="feelsTxt" Text="0.0" FontSize="34" FontWeight="SemiBold"/>
+                                    <TextBlock Text="°C" FontSize="34" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
+                                </StackPanel>
 
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
-                                <TextBlock x:Name="Visibility" Text="5.2" FontSize="34" FontWeight="SemiBold"/>
-                                <TextBlock Text="км" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
-                            </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource widgetBorder}">
+                            <Grid>
+                                <TextBlock Text="Давление" Style="{StaticResource titleText}" Margin="0,0,0,10"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock x:Name="grndTxt" Text="0.0" FontSize="34" FontWeight="SemiBold"/>
+                                    <TextBlock Text="мм рт.ст" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
+                                </StackPanel>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
+                                    <TextBlock x:Name="grndText" Text="Нормально" FontWeight="SemiBold"/>
+                                    <Image x:Name="grndIcon" Source="/Images/like.png" Width="18" Height="18" Margin="10 0 0 0"/>
+                                </StackPanel>
 
-                            <StackPanel Orientation="Horizontal" VerticalAlignment="Bottom">
-                                <TextBlock x:Name="VisibilityName" Text="Средняя" FontWeight="SemiBold"/>
-                                <Image x:Name="VisibilityIcon" Source="/Images/happy.png" Width="18" Height="18" Margin="10 0 0 0"/>
-                            </StackPanel>
+                            </Grid>
+                        </Border>
+                        <Border Style="{StaticResource widgetBorder}" Width="668">
+                            <Grid>
+                                <oxy:PlotView Name="WeatherPlot" />
+                            </Grid>
+                        </Border>
 
+                        <Border Style="{StaticResource widgetBorder}" Height="223" Width="644">
+                            <cefSharp:ChromiumWebBrowser  x:Name="WebView"  Margin="-20,-16,-21,-16">
+                            </cefSharp:ChromiumWebBrowser>
+                        </Border>
+                        <Border Style="{StaticResource widgetBorder}">
+                            <Grid>
+                                <TextBlock Text="Осадки за 3 часа" Style="{StaticResource titleText}" Margin="0,0,0,10"/>
+                                <StackPanel Orientation="Horizontal" VerticalAlignment="Center">
+                                    <TextBlock x:Name="rainTxt" Text="0.0" FontSize="28" FontWeight="SemiBold"/>
+                                    <TextBlock Text="мм рт.ст" FontSize="14" VerticalAlignment="Bottom" Margin="5 0 0 3"/>
+                                </StackPanel>
 
-                        </Grid>
-                    </Border>
+                            </Grid>
+                        </Border>
 
-                </WrapPanel>
+                    </WrapPanel>
+                </ScrollViewer>
             </StackPanel>
 
         </Border>

@@ -7,6 +7,7 @@ public class WeatherApiClient
 {
     public async Task<WeatherData> GetWeatherDataAsync()
     {
+
         using (var client = new HttpClient())
         {
             try
@@ -34,14 +35,19 @@ public class WeatherData
     public Weather[] weather { get; set; }
     public Clouds clouds { get; set; }
     public Wind wind {  get; set; }
+    public Rain rain { get; set; }
+    public Suns sys { get; set; }
     public long dt { get; set; }
     public int timezone { get; set; }
+    public int visibility {  get; set; }
 }
 
 public class MainData
 {
     public double temp { get; set; }
     public int humidity { get; set; }
+    public double feels_like{  get; set; }
+    public double grnd_level { get; set; }
 }
 
 public class Coordinates
@@ -64,5 +70,16 @@ public class Wind
 {
     public double speed { get; set; }
     public int deg {  get; set; }
+    public double gust { get; set; }
+}
+public class Rain
+{
+    public double _3h { get; set; }
+}
+public class Suns
+{
+    public long sunrise { get; set; }
+
+    public long sunset { get; set; }
 }
 

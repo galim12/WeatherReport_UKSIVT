@@ -32,13 +32,13 @@ namespace WeatherReport_UKSIVT.API
                     imagePath = "/Images/sun_cloud.png";
                     break;
                 case "03d": // облачно (день)
-                    imagePath = "/Images/cloud.png";
+                    imagePath = "/Images/sun_cloud.png";
                     break;
                 case "04d": // облачно (день)
-                    imagePath = "/Images/cloud.png";
+                    imagePath = "/Images/sun_cloud.png";
                     break;
                 case "09d": // дождь (день)
-                    imagePath = "/Images/cloud.png";
+                    imagePath = "/Images/rain_cloud.png";
                     break;
                 case "10d": // ливень (день)
                     imagePath = "/Images/rain.png";
